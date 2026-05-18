@@ -1,136 +1,69 @@
-# app.py
-
-```python
 import streamlit as st
 import folium
-from folium.plugins import MarkerCluster
 from streamlit_folium import st_folium
 
-# 페이지 설정
 st.set_page_config(page_title="서울 관광지 TOP10", layout="wide")
 
-# 제목
-st.title("🌏 외국인들이 좋아하는 서울 관광지 TOP10")
-st.write("관광지 마커를 클릭하면 아래에 지하철역과 놀거리가 표시됩니다.")
+st.title("서울 관광지 TOP10")
 
-# 관광지 데이터
 places = [
     {
         "name": "경복궁",
         "lat": 37.579617,
         "lon": 126.977041,
         "station": "경복궁역",
-        "fun": "한복 체험, 북촌한옥마을 산책"
+        "fun": "한복 체험"
     },
     {
         "name": "N서울타워",
         "lat": 37.551169,
         "lon": 126.988227,
         "station": "명동역",
-        "fun": "야경 감상, 케이블카"
-    },
-    {
-        "name": "명동",
-        "lat": 37.563757,
-        "lon": 126.985302,
-        "station": "명동역",
-        "fun": "길거리 음식, 쇼핑"
+        "fun": "야경 감상"
     },
     {
         "name": "홍대거리",
         "lat": 37.556268,
         "lon": 126.922641,
         "station": "홍대입구역",
-        "fun": "버스킹, 카페 투어"
-    },
-    {
-        "name": "롯데월드타워",
-        "lat": 37.512462,
-        "lon": 127.102544,
-        "station": "잠실역",
-        "fun": "전망대, 쇼핑몰"
-    },
-    {
-        "name": "북촌한옥마을",
-        "lat": 37.582604,
-        "lon": 126.983998,
-        "station": "안국역",
-        "fun": "전통 한옥 구경, 사진 촬영"
-    },
-    {
-        "name": "동대문디자인플라자(DDP)",
-        "lat": 37.566526,
-        "lon": 127.009223,
-        "station": "동대문역사문화공원역",
-        "fun": "야경, 전시회"
-    },
-    {
-        "name": "코엑스",
-        "lat": 37.511685,
-        "lon": 127.059151,
-        "station": "삼성역",
-        "fun": "별마당도서관, 아쿠아리움"
-    },
-    {
-        "name": "광장시장",
-        "lat": 37.570377,
-        "lon": 126.999997,
-        "station": "종로5가역",
-        "fun": "빈대떡, 마약김밥 먹방"
-    },
-    {
-        "name": "한강공원",
-        "lat": 37.528316,
-        "lon": 126.932651,
-        "station": "여의나루역",
-        "fun": "자전거, 치맥"
+        "fun": "버스킹"
     }
 ]
 
-# 지도 생성
-m = folium.Map(
-    location=[37.5665, 126.9780],
-    zoom_start=11
-)
+m = folium.Map(location=[37.5665, 126.9780], zoom_start=11)
 
-# 마커 클러스터
-marker_cluster = MarkerCluster().add_to(m)
-
-# 마커 추가
 for place in places:
     folium.Marker(
         [place["lat"], place["lon"]],
-        popup=place["name"],
-        tooltip=place["name"],
-        icon=folium.Icon(color="red", icon="star")
-    ).add_to(marker_cluster)
+        popup=place["name"]
+    ).add_to(m)
 
-# 지도 출력
-map_data = st_folium(m, width=1000, height=600)
+map_data = st_folium(m, width=900, height=500)
 
-# 클릭 정보 출력
-st.markdown("---")
-st.subheader("📍 관광지 정보")
+st.write("---")
 
-clicked_place = None
+clicked = None
 
-if map_data is not None:
-    clicked_place = map_data.get("last_object_clicked_popup")
+if map_data:
+    clicked = map_data.get("last_object_clicked_popup")
 
-if clicked_place:
+if clicked:
     for place in places:
-        if place["name"] == clicked_place:
+        if place["name"] == clicked:
             st.success(
-                f"🚉 가까운 지하철역: {place['station']} | 🎡 놀거리: {place['fun']}"
+                f"가까운 지하철역: {place['station']} | 놀거리: {place['fun']}"
             )
-            break
-else:
-    st.info("지도의 마커를 클릭해보세요!")
 ```
 
----
+requirements.txt 파일에는 아래만 넣어.
 
-# requirements.txt
+```txt
+streamlit
+folium
+streamlit-folium
+```
+
+# 실행 방법
 
 ```txt
 streamlit
