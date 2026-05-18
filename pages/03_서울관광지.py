@@ -5,12 +5,13 @@
 ```python
 import streamlit as st
 import folium
+from folium.plugins import MarkerCluster
 from streamlit_folium import st_folium
 
 st.set_page_config(page_title="서울 관광지 TOP10", layout="wide")
 
 st.title("🌏 외국인들이 좋아하는 서울 관광지 TOP10")
-st.markdown("지도의 마커를 클릭하면 아래에 가까운 지하철역과 놀거리를 볼 수 있어요!")
+st.write("지도의 관광지를 클릭하면 아래에 지하철역과 놀거리가 표시됩니다.")
 
 # 관광지 데이터
 places = [
@@ -89,24 +90,28 @@ places = [
 # 지도 생성
 m = folium.Map(location=[37.5665, 126.9780], zoom_start=11)
 
+marker_cluster = MarkerCluster().add_to(m)
+
 for place in places:
     folium.Marker(
         location=[place["lat"], place["lon"]],
         popup=place["name"],
         tooltip=place["name"],
         icon=folium.Icon(color="red", icon="star")
-    ).add_to(m)
+    ).add_to(marker_cluster)
 
 # 지도 출력
 map_data = st_folium(m, width=1000, height=600)
 
-# 클릭한 장소 정보 출력
 st.markdown("---")
 st.subheader("📍 관광지 정보")
 
-if map_data["last_object_clicked_popup"]:
-    clicked_place = map_data["last_object_clicked_popup"]
+clicked_place = None
 
+if map_data:
+    clicked_place = map_data.get("last_object_clicked_popup")
+
+if clicked_place:
     for place in places:
         if place["name"] == clicked_place:
             st.success(
@@ -114,7 +119,7 @@ if map_data["last_object_clicked_popup"]:
             )
             break
 else:
-    st.info("지도의 관광지를 클릭해보세요!")
+    st.info("관광지 마커를 클릭해보세요!")
 ```
 
 ---
@@ -122,9 +127,9 @@ else:
 ## requirements.txt
 
 ```txt
-streamlit
-folium
-streamlit-folium
+streamlit>=1.35.0
+folium>=0.16.0
+streamlit-folium>=0.20.0
 ```
 
 ---
