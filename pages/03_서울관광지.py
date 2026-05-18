@@ -1,6 +1,4 @@
-# Streamlit + Folium 서울 관광지 TOP10 지도 앱
-
-## app.py
+# app.py
 
 ```python
 import streamlit as st
@@ -8,10 +6,12 @@ import folium
 from folium.plugins import MarkerCluster
 from streamlit_folium import st_folium
 
+# 페이지 설정
 st.set_page_config(page_title="서울 관광지 TOP10", layout="wide")
 
+# 제목
 st.title("🌏 외국인들이 좋아하는 서울 관광지 TOP10")
-st.write("지도의 관광지를 클릭하면 아래에 지하철역과 놀거리가 표시됩니다.")
+st.write("관광지 마커를 클릭하면 아래에 지하철역과 놀거리가 표시됩니다.")
 
 # 관광지 데이터
 places = [
@@ -88,13 +88,18 @@ places = [
 ]
 
 # 지도 생성
-m = folium.Map(location=[37.5665, 126.9780], zoom_start=11)
+m = folium.Map(
+    location=[37.5665, 126.9780],
+    zoom_start=11
+)
 
+# 마커 클러스터
 marker_cluster = MarkerCluster().add_to(m)
 
+# 마커 추가
 for place in places:
     folium.Marker(
-        location=[place["lat"], place["lon"]],
+        [place["lat"], place["lon"]],
         popup=place["name"],
         tooltip=place["name"],
         icon=folium.Icon(color="red", icon="star")
@@ -103,12 +108,13 @@ for place in places:
 # 지도 출력
 map_data = st_folium(m, width=1000, height=600)
 
+# 클릭 정보 출력
 st.markdown("---")
 st.subheader("📍 관광지 정보")
 
 clicked_place = None
 
-if map_data:
+if map_data is not None:
     clicked_place = map_data.get("last_object_clicked_popup")
 
 if clicked_place:
@@ -119,17 +125,17 @@ if clicked_place:
             )
             break
 else:
-    st.info("관광지 마커를 클릭해보세요!")
+    st.info("지도의 마커를 클릭해보세요!")
 ```
 
 ---
 
-## requirements.txt
+# requirements.txt
 
 ```txt
-streamlit>=1.35.0
-folium>=0.16.0
-streamlit-folium>=0.20.0
+streamlit
+folium
+streamlit-folium
 ```
 
 ---
