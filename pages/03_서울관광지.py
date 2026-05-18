@@ -2,38 +2,131 @@ import streamlit as st
 import folium
 from streamlit_folium import st_folium
 
-st.set_page_config(page_title="서울 관광지", layout="wide")
+# 페이지 설정
+st.set_page_config(
+    page_title="서울 관광지 TOP10",
+    layout="wide"
+)
 
-st.title("🌏 서울 관광지 TOP10")
+# 제목
+st.title("🌏 외국인들이 좋아하는 서울 관광지 TOP10")
+st.write("관광지 마커를 클릭하면 가까운 지하철역과 놀거리가 표시됩니다.")
 
+# 관광지 데이터
 places = [
-    ["경복궁", 37.579617, 126.977041, "경복궁역", "한복 체험"],
-    ["N서울타워", 37.551169, 126.988227, "명동역", "야경 감상"],
-    ["명동", 37.563757, 126.985302, "명동역", "쇼핑"],
-    ["홍대거리", 37.556268, 126.922641, "홍대입구역", "버스킹"],
-    ["롯데월드타워", 37.512462, 127.102544, "잠실역", "전망대"],
+    {
+        "name": "경복궁",
+        "lat": 37.579617,
+        "lon": 126.977041,
+        "station": "경복궁역",
+        "fun": "한복 체험, 북촌한옥마을 산책"
+    },
+    {
+        "name": "N서울타워",
+        "lat": 37.551169,
+        "lon": 126.988227,
+        "station": "명동역",
+        "fun": "야경 감상, 케이블카"
+    },
+    {
+        "name": "명동",
+        "lat": 37.563757,
+        "lon": 126.985302,
+        "station": "명동역",
+        "fun": "길거리 음식, 쇼핑"
+    },
+    {
+        "name": "홍대거리",
+        "lat": 37.556268,
+        "lon": 126.922641,
+        "station": "홍대입구역",
+        "fun": "버스킹, 카페 투어"
+    },
+    {
+        "name": "롯데월드타워",
+        "lat": 37.512462,
+        "lon": 127.102544,
+        "station": "잠실역",
+        "fun": "전망대, 쇼핑몰"
+    },
+    {
+        "name": "북촌한옥마을",
+        "lat": 37.582604,
+        "lon": 126.983998,
+        "station": "안국역",
+        "fun": "전통 한옥 구경, 사진 촬영"
+    },
+    {
+        "name": "동대문디자인플라자(DDP)",
+        "lat": 37.566526,
+        "lon": 127.009223,
+        "station": "동대문역사문화공원역",
+        "fun": "야경, 전시회"
+    },
+    {
+        "name": "코엑스",
+        "lat": 37.511685,
+        "lon": 127.059151,
+        "station": "삼성역",
+        "fun": "별마당도서관, 아쿠아리움"
+    },
+    {
+        "name": "광장시장",
+        "lat": 37.570377,
+        "lon": 126.999997,
+        "station": "종로5가역",
+        "fun": "빈대떡, 마약김밥 먹방"
+    },
+    {
+        "name": "한강공원",
+        "lat": 37.528316,
+        "lon": 126.932651,
+        "station": "여의나루역",
+        "fun": "자전거, 치맥"
+    }
 ]
 
-m = folium.Map(location=[37.5665, 126.9780], zoom_start=11)
+# 지도 생성
+m = folium.Map(
+    location=[37.5665, 126.9780],
+    zoom_start=11
+)
 
-for p in places:
+# 마커 추가
+for place in places:
     folium.Marker(
-        location=[p[1], p[2]],
-        popup=p[0],
-        tooltip=p[0]
+        location=[place["lat"], place["lon"]],
+        popup=place["name"],
+        tooltip=place["name"],
+        icon=folium.Icon(
+            color="red",
+            icon="info-sign"
+        )
     ).add_to(m)
 
-map_data = st_folium(m, width=900, height=500)
+# 지도 출력
+map_data = st_folium(
+    m,
+    width=1000,
+    height=600
+)
 
+# 구분선
 st.write("---")
-st.subheader("관광지 정보")
 
-clicked = None
+# 클릭 정보 출력
+st.subheader("📍 관광지 정보")
+
+clicked_place = None
 
 if map_data:
-    clicked = map_data.get("last_object_clicked_popup")
+    clicked_place = map_data.get("last_object_clicked_popup")
 
-if clicked:
-    for p in places:
-        if p[0] == clicked:
-            st.success(f"가까운 지하철역: {p[3]} | 놀거리: {p[4]}")
+if clicked_place:
+    for place in places:
+        if place["name"] == clicked_place:
+            st.success(
+                f"🚉 가까운 지하철역: {place['station']} | 🎡 놀거리: {place['fun']}"
+            )
+else:
+    st.info("지도의 관광지 마커를 클릭해보세요!")
